@@ -24,7 +24,10 @@ static struct cdev *fib_cdev;
 static struct class *fib_class;
 static DEFINE_MUTEX(fib_mutex);
 
-static long long fib_sequence(long long k)
+
+static long long (*fib_sequence)(long long k);
+
+static long long fib_sequence_naive(long long k)
 {
     /* FIXME: use clz/ctz and fast algorithms to speed up */
     long long f[k + 2];
@@ -45,6 +48,7 @@ static int fib_open(struct inode *inode, struct file *file)
         printk(KERN_ALERT "fibdrv is in use");
         return -EBUSY;
     }
+    fib_sequence = fib_sequence_naive;
     return 0;
 }
 
