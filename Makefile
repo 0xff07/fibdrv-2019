@@ -42,6 +42,6 @@ check: all
 time: all
 	$(MAKE) unload
 	$(MAKE) load
-	sudo ./client > user_time.txt
+	sudo ./client > user_time.out
 	$(MAKE) unload
 

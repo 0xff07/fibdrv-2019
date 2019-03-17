@@ -29,7 +29,9 @@ dkms.conf
 # test-oriented
 client
 out
+*.out
 
 # perf data
 perf.data
 perf.data.old
+
