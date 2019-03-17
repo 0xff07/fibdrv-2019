@@ -4,6 +4,7 @@
 #include <linux/init.h>
 #include <linux/kdev_t.h>
 #include <linux/kernel.h>
+#include <linux/ktime.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
 
@@ -19,11 +20,13 @@ MODULE_VERSION("0.1");
  */
 #define MAX_LENGTH 92
 
+static int use_ktime = 0;
+module_param(use_ktime, int, S_IRUGO);
+
 static dev_t fib_dev = 0;
 static struct cdev *fib_cdev;
 static struct class *fib_class;
 static DEFINE_MUTEX(fib_mutex);
-
 
 static long long (*fib_sequence)(long long k);
 
@@ -64,6 +67,16 @@ static ssize_t fib_read(struct file *file,
                         size_t size,
                         loff_t *offset)
 {
+    if (use_ktime) {
+        ssize_t res = 0;
+        ktime_t start, end;
+        start = ktime_get_ns();
+        res = fib_sequence(*offset);
+        end = ktime_get_ns();
+        u64 duration = ktime_to_ns(end) - ktime_to_ns(start);
+        printk(KERN_ALERT "%lld,%llu", *offset, duration);
+        return res;
+    }
     return (ssize_t) fib_sequence(*offset);
 }
 
