@@ -38,3 +38,10 @@ check: all
 	sudo ./client > out
 	$(MAKE) unload
 	@diff -u out expected.txt && $(call pass)
+
+time: all
+	$(MAKE) unload
+	$(MAKE) load
+	sudo ./client > user_time.txt
+	$(MAKE) unload
+
